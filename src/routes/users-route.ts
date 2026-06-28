@@ -19,7 +19,13 @@ export const usersRoute = new Elysia({ prefix: "/api" })
       name: t.String({ maxLength: 255 }),
       email: t.String({ maxLength: 255, format: "email" }),
       pasword: t.String({ maxLength: 255 })
-    })
+    }),
+    detail: { tags: ["Users"] },
+    response: {
+      200: t.Object({ data: t.String() }),
+      400: t.Object({ eror: t.String() }),
+      500: t.Object({ eror: t.String() })
+    }
   })
   .post("/users/login", async ({ body, set }) => {
     try {
@@ -37,7 +43,13 @@ export const usersRoute = new Elysia({ prefix: "/api" })
     body: t.Object({
       email: t.String({ maxLength: 255, format: "email" }),
       pasword: t.String({ maxLength: 255 })
-    })
+    }),
+    detail: { tags: ["Users"] },
+    response: {
+      200: t.Object({ data: t.String() }),
+      400: t.Object({ eror: t.String() }),
+      500: t.Object({ eror: t.String() })
+    }
   })
   .get("/users/current", async ({ headers, set }) => {
     try {
@@ -66,6 +78,23 @@ export const usersRoute = new Elysia({ prefix: "/api" })
       set.status = 500;
       return { eror: error.message || "Internal server error" };
     }
+  }, {
+    detail: { tags: ["Users"] },
+    headers: t.Object({
+      authorization: t.Optional(t.String())
+    }),
+    response: {
+      200: t.Object({
+        data: t.Object({
+          id: t.Number(),
+          username: t.String(),
+          email: t.String(),
+          created_at: t.Any()
+        })
+      }),
+      401: t.Object({ eror: t.String() }),
+      500: t.Object({ eror: t.String() })
+    }
   })
   .delete("/users/logout", async ({ headers, set }) => {
     try {
@@ -85,6 +114,16 @@ export const usersRoute = new Elysia({ prefix: "/api" })
       }
       set.status = 500;
       return { eror: error.message || "Internal server error" };
+    }
+  }, {
+    detail: { tags: ["Users"] },
+    headers: t.Object({
+      authorization: t.Optional(t.String())
+    }),
+    response: {
+      200: t.Object({ data: t.String() }),
+      401: t.Object({ eror: t.String() }),
+      500: t.Object({ eror: t.String() })
     }
   });
 
