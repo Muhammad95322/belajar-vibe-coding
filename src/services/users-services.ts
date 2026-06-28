@@ -59,3 +59,24 @@ export async function loginUser(data: { email: string; pasword: string }) {
 
   return { data: token };
 }
+
+export async function getCurrentUser(token: string) {
+  // Find session and join with users table
+  const userSession = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      createdAt: users.createdAt,
+    })
+    .from(sessions)
+    .innerJoin(users, eq(sessions.userId, users.id))
+    .where(eq(sessions.token, token))
+    .limit(1);
+
+  if (userSession.length === 0) {
+    throw new Error("unauthorized");
+  }
+
+  return userSession[0];
+}
